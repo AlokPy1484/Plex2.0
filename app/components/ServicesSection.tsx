@@ -19,7 +19,7 @@ const items = [
 
 export default function ServicesSection() {
   return (
-    <section className="relative bg-black px-4 py-20 text-white">
+    <section id="services" className="relative bg-black px-4 py-20 text-white">
       {/* background glow */}
       <div className="absolute inset-0 bg-gradient-to-br from-[#290A0A]/40 via-transparent to-black" />
 

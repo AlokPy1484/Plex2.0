@@ -5,7 +5,7 @@ import { Smile } from "lucide-react";
 
 export default function Testimonial() {
   return (
-    <section className="relative bg-black px-6 py-12 text-white w-full flex flex-col justify-center items-center overflow-hidden">
+    <section id="testimonials" className="relative bg-black px-6 py-12 text-white w-full flex flex-col justify-center items-center overflow-hidden">
       {/* Background gradient */}
       <div className="absolute inset-0 bg-gradient-to-b from-black via-black to-[#290A0A]/30" />
 

@@ -4,7 +4,7 @@ import { Twitter, Instagram, Facebook, Dribbble } from 'lucide-react';
 
 export default function Footer() {
   return (
-    <footer className="relative bg-black px-6 pt-24 pb-10 text-white">
+    <footer id="contact" className="relative bg-black px-6 pt-24 pb-10 text-white">
       {/* Subtle top divider */}
       <div className="absolute inset-x-0 top-0 h-px bg-white/10" />
 

@@ -18,16 +18,16 @@ export default function Navbar() {
 
         {/* Nav Links */}
         <div className="hidden md:flex items-center gap-8 text-sm text-white/70">
-          <Link href="#" className="hover:text-white transition">
+          <Link href="#services" className="hover:text-white transition">
             Services
           </Link>
-          <Link href="#" className="hover:text-white transition">
+          <Link href="#projects" className="hover:text-white transition">
             Projects
           </Link>
-          <Link href="#" className="hover:text-white transition">
+          <Link href="#testimonials" className="hover:text-white transition">
             Testimonials
           </Link>
-          <Link href="#" className="hover:text-white transition">
+          <Link href="#contact" className="hover:text-white transition">
             Contact
           </Link>
         

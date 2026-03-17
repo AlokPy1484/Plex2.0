@@ -4,36 +4,36 @@ import { Check, X } from 'lucide-react';
 
 export default function PickMe() {
   return (
-    <section className="relative bg-black px-6 py-24 text-white">
+    <section id="projects" className="relative bg-black px-6 py-24 text-white">
       {/* Background gradient */}
       <div className="absolute inset-0 bg-gradient-to-b from-black via-black to-[#290A0A]/20" />
 
       <div className="relative mx-auto max-w-6xl">
 
         <div className='sticky top-[50px]'>
-        {/* Badge */}
-        <div className="flex justify-center">
-          <span className="inline-flex items-center gap-2 rounded-full bg-[#290A0A] px-4 py-1 text-sm text-white">
-            ⦿ Why choose me
-          </span>
+          {/* Badge */}
+          <div className="flex justify-center">
+            <span className="inline-flex items-center gap-2 rounded-full bg-[#290A0A] px-4 py-1 text-sm text-white">
+              ⦿ Why choose me
+            </span>
+          </div>
+
+          {/* Heading */}
+          <h2 className="mt-8 text-center text-4xl font-medium tracking-tight sm:text-5xl lg:text-6xl">
+            <span className="text-red-600">Why Plex</span>{' '}
+            <span className="text-white/90">for Motion Designing</span>
+          </h2>
+
+          {/* Subheading */}
+          <p className="mt-4 text-center text-white/60">
+            Why Partner with Me for the Design Excellence
+          </p>
         </div>
 
-        {/* Heading */}
-        <h2 className="mt-8 text-center text-4xl font-medium tracking-tight sm:text-5xl lg:text-6xl">
-          <span className="text-red-600">Why Plex</span>{' '}
-          <span className="text-white/90">for Motion Designing</span>
-        </h2>
-
-        {/* Subheading */}
-        <p className="mt-4 text-center text-white/60">
-          Why Partner with Me for the Design Excellence
-        </p>
-        </div>
-
-        {/* Comparison Card */}
+        {/* Comparison Card 1 */}
         <div className="sticky top-[250px] mt-16 rounded-3xl border border-white/10 bg-white/5  p-8 backdrop-blur-3xl">
           <div className="grid grid-cols-1 gap-10 md:grid-cols-2 md:gap-16">
-            {/* Left - Skilled */}
+            {/* Left - Pro */}
             <div>
               <div className="mb-6 flex items-center gap-3">
                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-green-500/10">
@@ -42,12 +42,11 @@ export default function PickMe() {
               </div>
 
               <h3 className="text-2xl font-semibold">
-                Skilled Professional
+                Custom Motion Design
               </h3>
 
               <p className="mt-3 max-w-md text-white/60">
-                Gain access to top-tier talent with years of experience,
-                ensuring flawless execution
+                Tailored, fluid animations crafted specifically for your brand to captivate and engage your audience.
               </p>
             </div>
 
@@ -63,19 +62,20 @@ export default function PickMe() {
               </div>
 
               <h3 className="text-2xl font-semibold">
-                Amateur Designer
+                Stock Templates
               </h3>
 
               <p className="mt-3 max-w-md text-white/60">
-                Lack of experience may result in design inconsistencies and
-                overlooked details
+                Rigid, cookie-cutter templates that lack personality and fail to make your brand stand out.
               </p>
             </div>
           </div>
         </div>
-                <div className="sticky top-[250px] mt-16 rounded-3xl border border-white/10 bg-white/5 p-8 backdrop-blur-xl">
+
+        {/* Comparison Card 2 */}
+        <div className="sticky top-[250px] mt-16 rounded-3xl border border-white/10 bg-white/5 p-8 backdrop-blur-xl">
           <div className="grid grid-cols-1 gap-10 md:grid-cols-2 md:gap-16">
-            {/* Left - Skilled */}
+            {/* Left - Pro */}
             <div>
               <div className="mb-6 flex items-center gap-3">
                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-green-500/10">
@@ -84,12 +84,11 @@ export default function PickMe() {
               </div>
 
               <h3 className="text-2xl font-semibold">
-                Skilled Professional
+                Direct Communication
               </h3>
 
               <p className="mt-3 max-w-md text-white/60">
-                Gain access to top-tier talent with years of experience,
-                ensuring flawless execution
+                You work directly with the creator. Swift feedback loops, complete transparency, and no middlemen.
               </p>
             </div>
 
@@ -105,19 +104,20 @@ export default function PickMe() {
               </div>
 
               <h3 className="text-2xl font-semibold">
-                Amateur Designer
+                Traditional Agencies
               </h3>
 
               <p className="mt-3 max-w-md text-white/60">
-                Lack of experience may result in design inconsistencies and
-                overlooked details
+                Messages lost in translation across accounts managers, slow turnaround times, and bloated budgets.
               </p>
             </div>
           </div>
         </div>
-                <div className="sticky top-[250px] mt-16 rounded-3xl border border-white/10 bg-[#0E0E0E] p-8 backdrop-blur-xl">
+
+        {/* Comparison Card 3 */}
+        <div className="sticky top-[250px] mt-16 rounded-3xl border border-white/10 bg-[#0E0E0E] p-8 backdrop-blur-xl">
           <div className="grid grid-cols-1 gap-10 md:grid-cols-2 md:gap-16">
-            {/* Left - Skilled */}
+            {/* Left - Pro */}
             <div>
               <div className="mb-6 flex items-center gap-3">
                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-green-500/10">
@@ -126,12 +126,11 @@ export default function PickMe() {
               </div>
 
               <h3 className="text-2xl font-semibold">
-                Skilled Professional
+                Optimized Deliverables
               </h3>
 
               <p className="mt-3 max-w-md text-white/60">
-                Gain access to top-tier talent with years of experience,
-                ensuring flawless execution
+                Files are delivered in perfectly optimized formats for web, social media, and apps to ensure smooth playback.
               </p>
             </div>
 
@@ -147,19 +146,20 @@ export default function PickMe() {
               </div>
 
               <h3 className="text-2xl font-semibold">
-                Amateur Designer
+                Messy Project Files
               </h3>
 
               <p className="mt-3 max-w-md text-white/60">
-                Lack of experience may result in design inconsistencies and
-                overlooked details
+                Unorganized project structures, massive export sizes, and formats that cause lagging on your platforms.
               </p>
             </div>
           </div>
         </div>
-                <div className="sticky top-[250px] mt-16 rounded-3xl border border-white/10 bg-white/5 p-8 backdrop-blur-xl">
+
+        {/* Comparison Card 4 */}
+        <div className="sticky top-[250px] mt-16 rounded-3xl border border-white/10 bg-white/5 p-8 backdrop-blur-xl">
           <div className="grid grid-cols-1 gap-10 md:grid-cols-2 md:gap-16">
-            {/* Left - Skilled */}
+            {/* Left - Pro */}
             <div>
               <div className="mb-6 flex items-center gap-3">
                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-green-500/10">
@@ -168,12 +168,11 @@ export default function PickMe() {
               </div>
 
               <h3 className="text-2xl font-semibold">
-                Skilled Professional
+                Strategic Storytelling
               </h3>
 
               <p className="mt-3 max-w-md text-white/60">
-                Gain access to top-tier talent with years of experience,
-                ensuring flawless execution
+                Every frame serves a purpose. We focus on pacing, rhythm, and narrative to drive your core message home.
               </p>
             </div>
 
@@ -189,12 +188,11 @@ export default function PickMe() {
               </div>
 
               <h3 className="text-2xl font-semibold">
-                Amateur Designer
+                Aimless Animation
               </h3>
 
               <p className="mt-3 max-w-md text-white/60">
-                Lack of experience may result in design inconsistencies and
-                overlooked details
+                Movement just for the sake of movement, which distracts from your goals and loses the viewer's attention.
               </p>
             </div>
           </div>

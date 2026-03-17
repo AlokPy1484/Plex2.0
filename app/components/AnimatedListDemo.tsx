@@ -7,45 +7,39 @@ interface Item {
   name: string
   description: string
   icon: string
-  color: string
   time: string
 }
 
 let notifications = [
   {
-    name: "Payment received",
-    description: "Magic UI",
+    name: "New Notification",
+    description: "Great product, would love to know more",
     time: "15m ago",
-
-    icon: "💸",
-    color: "#00C9A7",
+    icon: "/insta.png",
   },
   {
-    name: "User signed up",
-    description: "Magic UI",
+    name: "Project Inquiry",
+    description: "Hi! Are you available for a new motion design project?",
     time: "10m ago",
-    icon: "👤",
-    color: "#FFB800",
+    icon: "/insta.png",
   },
   {
     name: "New message",
-    description: "Magic UI",
+    description: "How can I place an order for a custom animation?",
     time: "5m ago",
-    icon: "💬",
-    color: "#FF3D71",
+    icon: "/whatsapp.png",
   },
   {
-    name: "New event",
-    description: "Magic UI",
+    name: "Payment Received",
+    description: "Invoice #1042 has been paid in full.",
     time: "2m ago",
-    icon: "🗞️",
-    color: "#1E86FF",
+    icon: "/gmail.png",
   },
 ]
 
 notifications = Array.from({ length: 10 }, () => notifications).flat()
 
-const Notification = ({ name, description, icon, color, time }: Item) => {
+const Notification = ({ name, description, icon, time }: Item) => {
   return (
     <figure
       className={cn(
@@ -60,13 +54,8 @@ const Notification = ({ name, description, icon, color, time }: Item) => {
       )}
     >
       <div className="flex flex-row items-center gap-3">
-        <div
-          className="flex size-10 items-center justify-center rounded-2xl"
-          style={{
-            backgroundColor: color,
-          }}
-        >
-          <span className="text-lg">{icon}</span>
+        <div className="flex size-10 items-center justify-center overflow-hidden rounded-xl bg-white/5 border border-white/10 p-1">
+          <img src={icon} alt={name} className="size-full object-contain" />
         </div>
         <div className="flex flex-col overflow-hidden">
           <figcaption className="flex flex-row items-center text-lg font-medium whitespace-pre dark:text-white">
