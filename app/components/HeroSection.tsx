@@ -1,11 +1,12 @@
 'use client';
 
 import LiquidEther from '@/components/LiquidEther';
+import { AvatarCircles } from '@/components/ui/avatar-circles';
 import { Button } from "@/components/ui/button"
 
 export default function HeroSection() {
   return (
-    <section className="flex flex-col items-center text-center relative bg-black px-6 py-50 md:py-35 text-white overflow-hidden ">
+    <section className="flex flex-col items-center text-center relative bg-black px-6 py-30 md:py-33 text-white overflow-hidden ">
 
   <div className="absolute inset-0 ">
     <LiquidEther colors={["#ff2e21","#b60000","#bf0b08"]} />
@@ -40,7 +41,41 @@ export default function HeroSection() {
             
           </div>
 
+          <div className='flex flex-col justify-center items-center gap-4 mt-20'>
+            <a className='text-[20px] text-zinc-400'>Trusted by founders developers and creators</a>
+            <AvatarCircles numPeople={99} avatarUrls={avatars} />
+          </div>
+
 
     </section>
   );
 }
+
+
+
+const avatars = [
+  {
+    imageUrl: "https://avatars.githubusercontent.com/u/16860528",
+    profileUrl: "https://github.com/dillionverma",
+  },
+  {
+    imageUrl: "https://avatars.githubusercontent.com/u/20110627",
+    profileUrl: "https://github.com/tomonarifeehan",
+  },
+  {
+    imageUrl: "https://avatars.githubusercontent.com/u/106103625",
+    profileUrl: "https://github.com/BankkRoll",
+  },
+  {
+    imageUrl: "https://avatars.githubusercontent.com/u/59228569",
+    profileUrl: "https://github.com/safethecode",
+  },
+  {
+    imageUrl: "https://avatars.githubusercontent.com/u/59442788",
+    profileUrl: "https://github.com/sanjay-mali",
+  },
+  {
+    imageUrl: "https://avatars.githubusercontent.com/u/89768406",
+    profileUrl: "https://github.com/itsarghyadas",
+  },
+]

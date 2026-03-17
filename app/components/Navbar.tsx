@@ -5,7 +5,7 @@ import { CalendarDays, Sparkles } from 'lucide-react';
 
 export default function Navbar() {
   return (
-    <nav className="fixed top-6 left-1/2 z-50 w-[80vw] -translate-x-1/2 ">
+    <nav className="fixed top-6 left-1/2 z-50 w-[95vw] -translate-x-1/2 ">
       <div className="flex items-center justify-between rounded-full border border-white/10 bg-black/40 px-6 py-3 backdrop-blur-xl shadow-lg">
         
         {/* Logo */}
