@@ -9,14 +9,14 @@ import Testimonial from './components/Testimonial';
 
 export default function Home() {
   return (
-   <div className="bg-black max-w-screen">
+   <div className="bg-black ">
       <Navbar/>
       <HeroSection/>
       <ShowcaseGrid />
       <ServicesSection/>
       <LogoLooper/>
       <PickMe/>
-      <Testimonial/>
+      <Testimonial/> 
       <Footer/>
    </div>
   );
