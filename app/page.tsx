@@ -1,5 +1,5 @@
 import Footer from './components/Footer';
-import HeroSection from './components/HeroSection';
+import ScrollVideoHero from './components/ScrollVideoHero';
 import LogoLooper from './components/LogoLooper';
 import Navbar from './components/Navbar';
 import PickMe from './components/PickMe';
@@ -12,7 +12,7 @@ export default function Home() {
   return (
    <div className="bg-black ">
       <Navbar/>
-      <HeroSection/>
+      <ScrollVideoHero/>
       <ShowcaseGrid />
       <ServicesSection/>
       <LogoLooper/>

@@ -2,16 +2,18 @@
 
 import Link from 'next/link';
 import { CalendarDays, Sparkles } from 'lucide-react';
+import Image from 'next/image';
+import Logo from '../../public/nav_logo.png'
 
 export default function Navbar() {
   return (
     <nav className="fixed top-6 left-1/2 z-50 w-[95vw] -translate-x-1/2 ">
-      <div className="flex items-center justify-between rounded-full border border-white/10 bg-black/40 px-6 py-3 backdrop-blur-xl shadow-lg">
+      <div className="flex items-center justify-between rounded-full border  border-white/40 bg-white/10 px-6 py-1 backdrop-blur-xl shadow-lg">
         
         {/* Logo */}
         <div className="flex items-center gap-2 text-white font-semibold text-lg">
           <span className="flex h-8 w-8 items-center justify-center rounded-full font-black bg-white/10">
-            ▲
+            <Image src={Logo} alt="logo" width={200} className='bg-none rounded-full '/>
           </span>
           Plex
         </div>
