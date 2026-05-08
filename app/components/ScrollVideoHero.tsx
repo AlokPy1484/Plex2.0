@@ -1,194 +1,235 @@
 'use client';
 
-import { useRef, useEffect, useState } from 'react';
-import { AvatarCircles } from '@/components/ui/avatar-circles';
-import { Button } from '@/components/ui/button';
+import { useRef, useEffect, useMemo } from 'react';
 
-const avatars = [
-  {
-    imageUrl: 'https://avatars.githubusercontent.com/u/16860528',
-    profileUrl: 'https://github.com/dillionverma',
-  },
-  {
-    imageUrl: 'https://avatars.githubusercontent.com/u/20110627',
-    profileUrl: 'https://github.com/tomonarifeehan',
-  },
-  {
-    imageUrl: 'https://avatars.githubusercontent.com/u/106103625',
-    profileUrl: 'https://github.com/BankkRoll',
-  },
-  {
-    imageUrl: 'https://avatars.githubusercontent.com/u/59228569',
-    profileUrl: 'https://github.com/safethecode',
-  },
-  {
-    imageUrl: 'https://avatars.githubusercontent.com/u/59442788',
-    profileUrl: 'https://github.com/sanjay-mali',
-  },
-  {
-    imageUrl: 'https://avatars.githubusercontent.com/u/89768406',
-    profileUrl: 'https://github.com/itsarghyadas',
-  },
-];
+interface ScrollVideoHeroProps {
+  /** Global scroll fraction from the parent container (0 → 1) */
+  scrollFraction: number;
+}
 
-export default function ScrollVideoHero() {
-  const sectionRef = useRef<HTMLElement>(null);
+/**
+ * Scene 1 — Video Hero layer.
+ *
+ * The parent ScrollStoryContainer owns the scroll runway and sticky wrapper.
+ * This component is an absolute-positioned layer that:
+ *   • Scrubs the background video based on the scroll fraction
+ *   • Phases the "PLEX VISUALS" title and tagline text in/out
+ *   • Fades the entire scene to black before handing off to Scene 2
+ *
+ * The incoming `scrollFraction` covers 0–1 of the global timeline.
+ * This scene is active during roughly global 0–0.60 (mapped internally to 0–1).
+ */
+
+// ── Scene boundaries within the global timeline ──
+const SCENE_START = 0;
+const SCENE_END = 0.60;
+
+/** Remap a global fraction to a local 0-1 within this scene's range */
+function localFraction(global: number): number {
+  if (global <= SCENE_START) return 0;
+  if (global >= SCENE_END) return 1;
+  return (global - SCENE_START) / (SCENE_END - SCENE_START);
+}
+
+const words = ['SaaS', 'Fintech', 'AI', 'Web3'];
+
+export default function ScrollVideoHero({ scrollFraction }: ScrollVideoHeroProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [contentOpacity, setContentOpacity] = useState(1);
-  const [sectionOpacity, setSectionOpacity] = useState(1);
 
+  // Map global scroll to local (0-1 within this scene)
+  const local = localFraction(scrollFraction);
+
+  // ── Scrub video ──
   useEffect(() => {
     const video = videoRef.current;
-    const section = sectionRef.current;
-    if (!video || !section) return;
+    if (!video) return;
+    if (video.duration && isFinite(video.duration)) {
+      video.currentTime = local * video.duration;
+    }
+  }, [local]);
 
-    let ticking = false;
+  // ── Compute all visual states from local fraction (memoized) ──
+  const visuals = useMemo(() => {
+    // Phase 1: "PLEX VISUALS" — visible 0–15%, fades out 15–30%
+    const heroFadeStart = 0.15;
+    const heroFadeEnd = 0.30;
+    let heroOpacity = 1;
+    if (local > heroFadeStart && local < heroFadeEnd) {
+      heroOpacity = 1 - (local - heroFadeStart) / (heroFadeEnd - heroFadeStart);
+    } else if (local >= heroFadeEnd) {
+      heroOpacity = 0;
+    }
 
-    const handleScroll = () => {
-      if (ticking) return;
-      ticking = true;
+    // Phase 2: Tagline — fades in 25–35%, visible 35–65%, fades out 65–80%
+    const tagFadeInStart = 0.25;
+    const tagFadeInEnd = 0.35;
+    const tagFadeOutStart = 0.65;
+    const tagFadeOutEnd = 0.80;
+    let taglineOpacity = 0;
+    if (local < tagFadeInStart) {
+      taglineOpacity = 0;
+    } else if (local < tagFadeInEnd) {
+      taglineOpacity = (local - tagFadeInStart) / (tagFadeInEnd - tagFadeInStart);
+    } else if (local < tagFadeOutStart) {
+      taglineOpacity = 1;
+    } else if (local < tagFadeOutEnd) {
+      taglineOpacity = 1 - (local - tagFadeOutStart) / (tagFadeOutEnd - tagFadeOutStart);
+    }
 
-      requestAnimationFrame(() => {
-        const rect = section.getBoundingClientRect();
-        const sectionTop = -rect.top;
-        const scrollableHeight = section.offsetHeight - window.innerHeight;
+    // Rotating keyword within tagline
+    const wordStart = 0.25;
+    const wordEnd = 0.80;
+    const wordRange = wordEnd - wordStart;
+    const segmentSize = wordRange / words.length;
+    const transitionZone = 0.03;
+    let activeWord = 0;
+    let wordOpacity = 1;
 
-        if (scrollableHeight <= 0) {
-          ticking = false;
-          return;
-        }
+    if (local >= wordStart && local < wordEnd) {
+      const wordProgress = local - wordStart;
+      const rawIndex = Math.floor(wordProgress / segmentSize);
+      activeWord = Math.min(rawIndex, words.length - 1);
 
-        // Clamp scroll fraction between 0 and 1
-        const scrollFraction = Math.min(
-          Math.max(sectionTop / scrollableHeight, 0),
-          1
-        );
+      const segStart = wordStart + activeWord * segmentSize;
+      const segLen = segmentSize;
+      const posInSeg = local - segStart;
 
-        // Scrub the video to the corresponding time
-        if (video.duration && isFinite(video.duration)) {
-          video.currentTime = scrollFraction * video.duration;
-        }
+      let wOp = 1;
+      if (posInSeg < transitionZone) {
+        wOp = posInSeg / transitionZone;
+      } else if (posInSeg > segLen - transitionZone) {
+        wOp = (segLen - posInSeg) / transitionZone;
+      }
+      wordOpacity = Math.max(0, Math.min(1, wOp));
+    } else {
+      activeWord = 0;
+      wordOpacity = local < wordStart ? 1 : 0;
+    }
 
-        // Text fades out between 50% and 75% scroll
-        const textFadeStart = 0.50;
-        const textFadeEnd = 0.75;
-        if (scrollFraction <= textFadeStart) {
-          setContentOpacity(1);
-        } else if (scrollFraction >= textFadeEnd) {
-          setContentOpacity(0);
-        } else {
-          setContentOpacity(
-            1 - (scrollFraction - textFadeStart) / (textFadeEnd - textFadeStart)
-          );
-        }
+    // Section fade to black: 80–95% of local
+    const sectionFadeStart = 0.80;
+    const sectionFadeEnd = 0.95;
+    let sectionOpacity = 1;
+    if (local > sectionFadeStart && local < sectionFadeEnd) {
+      sectionOpacity = 1 - (local - sectionFadeStart) / (sectionFadeEnd - sectionFadeStart);
+    } else if (local >= sectionFadeEnd) {
+      sectionOpacity = 0;
+    }
 
-        // Entire section (video + everything) fades to total black
-        // Full opacity until 50% scroll, then fades to 0 by video end
-        const sectionFadeStart = 0.50;
-        const sectionFadeEnd = 0.75;
-        if (scrollFraction <= sectionFadeStart) {
-          setSectionOpacity(1);
-        } else if (scrollFraction >= sectionFadeEnd) {
-          setSectionOpacity(0);
-        } else {
-          setSectionOpacity(
-            1 - (scrollFraction - sectionFadeStart) / (sectionFadeEnd - sectionFadeStart)
-          );
-        }
-
-        ticking = false;
-      });
+    return {
+      heroOpacity: isNaN(heroOpacity) ? 1 : heroOpacity,
+      taglineOpacity: isNaN(taglineOpacity) ? 0 : taglineOpacity,
+      activeWord,
+      wordOpacity: isNaN(wordOpacity) ? 1 : wordOpacity,
+      sectionOpacity: isNaN(sectionOpacity) ? 1 : sectionOpacity,
     };
+  }, [local]);
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    handleScroll(); // Set initial state
+  const { heroOpacity, taglineOpacity, activeWord, wordOpacity, sectionOpacity } = visuals;
 
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  // Scene is fully invisible past the end — skip rendering internals
+  const sceneVisible = scrollFraction < SCENE_END + 0.05;
 
   return (
-    <section
-      ref={sectionRef}
-      className="relative w-full bg-black"
-      style={{ height: '300vh' }}
+    <div
+      className="absolute inset-0"
+      style={{
+        opacity: sceneVisible ? 1 : 0,
+        pointerEvents: sceneVisible ? 'auto' : 'none',
+      }}
     >
-      {/* Sticky video container — stays on screen while scrolling */}
-      <div className="sticky top-0 h-screen w-full overflow-hidden">
-        {/* Video background — fades to black near end */}
-        <video
-          ref={videoRef}
-          src="/Hero_BG.mp4"
-          muted
-          playsInline
-          preload="auto"
-          className="absolute inset-0 h-full w-full object-cover"
-          style={{
-            pointerEvents: 'none',
-            opacity: sectionOpacity,
-            transition: 'opacity 0.1s ease-out',
-          }}
-        />
+      {/* Video background */}
+      <video
+        ref={videoRef}
+        src="/Hero_BG.mp4"
+        muted
+        playsInline
+        preload="auto"
+        className="absolute inset-0 h-full w-full object-cover"
+        style={{
+          pointerEvents: 'none',
+          opacity: sectionOpacity,
+        }}
+      />
 
-        {/* Dark gradient overlay for legibility */}
-        <div
-          className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/40 to-black/80"
-          style={{ opacity: Math.max(contentOpacity, 0.3) * sectionOpacity }}
-        />
+      {/* Dark gradient overlay for legibility */}
+      <div
+        className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/10 to-black/40"
+        style={{
+          opacity: Math.max(Math.max(heroOpacity, taglineOpacity), 0.1) * sectionOpacity,
+        }}
+      />
 
-        {/* Hero content */}
-        <div
-          className="relative z-10 flex h-full flex-col items-center justify-center px-6 text-center text-white"
-          style={{
-            opacity: contentOpacity,
-            transform: `translateY(${(1 - contentOpacity) * -40}px)`,
-            transition: 'opacity 0.1s ease-out, transform 0.1s ease-out',
-            pointerEvents: contentOpacity < 0.1 ? 'none' : 'auto',
-          }}
-        >
-          {/* Badge */}
-          <span className="mb-8 inline-flex items-center gap-2 rounded-full bg-[#290A0A]/90 px-4 py-1 text-sm backdrop-blur">
-            ⦿ Marketing Agency
+      {/* Phase 1: Hero content — "PLEX VISUALS" */}
+      <div
+        className="absolute inset-0 z-10 flex h-full flex-col items-center justify-center px-6 text-center text-white select-none"
+        style={{
+          opacity: heroOpacity,
+          transform: `translateY(${(1 - heroOpacity) * -40}px)`,
+          pointerEvents: 'none',
+        }}
+      >
+        <h1 className="flex flex-col items-center justify-center leading-none">
+          <span className="font-bold text-[150px] tracking-[0.15em] text-white font-myfont"
+          style={{ fontFamily: 'var(--font-myfont)' }}>
+            PLEX
           </span>
-
-          {/* Heading */}
-          <h1 className="font-medium tracking-tight text-5xl md:text-3xl lg:text-7xl">
-            Turning Ideas into Influence
-          </h1>
-
-          {/* Description */}
-          <p className="mt-8 max-w-3xl text-white/70 text-sm md:text-2xl">
-            Digital Marketing Experts in Custom SaaS Advertising Videos
-          </p>
-
-          {/* Buttons */}
-          <div className="flex flex-row justify-center items-center gap-4 w-full mt-8">
-            <Button>Our Services</Button>
-            <Button className="bg-[#290A0A]/90">Contact Us</Button>
-          </div>
-
-          {/* Avatars */}
-          <div className="flex flex-col justify-center items-center gap-4 mt-20">
-            <a className="text-[20px] text-zinc-400">
-              Trusted by founders developers and creators
-            </a>
-            <AvatarCircles numPeople={99} avatarUrls={avatars} />
-          </div>
-        </div>
-
-        {/* Scroll indicator at bottom */}
-        <div
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-2"
-          style={{
-            opacity: contentOpacity,
-            transition: 'opacity 0.15s ease-out',
-          }}
-        >
-          <span className="text-white/50 text-xs tracking-widest uppercase">
-            Scroll to explore
+          <span
+            className="font-light text-[60px]  tracking-[0.60em] text-white/70 -mt-1"
+            style={{ fontFamily: 'var(--font-myfont)' }}
+          >
+            VISUALS
           </span>
-          <div className="h-10 w-[1px] bg-gradient-to-b from-white/50 to-transparent animate-pulse" />
-        </div>
+        </h1>
       </div>
-    </section>
+
+      {/* Phase 2: Tagline — "A motion design studio..." */}
+      <div
+        className="absolute inset-0 z-10 flex h-full flex-col items-center justify-center px-6 text-center text-white select-none"
+        style={{
+          opacity: taglineOpacity,
+          transform: `translateY(${(1 - taglineOpacity) * 30}px)`,
+          pointerEvents: 'none',
+        }}
+      >
+        <p
+          className="max-w-3xl leading-relaxed"
+          style={{
+            fontFamily: "'Plus Jakarta Sans', sans-serif",
+            fontSize: 'clamp(1.25rem, 3vw, 2.5rem)',
+            fontWeight: 300,
+            letterSpacing: '0.02em',
+            color: 'rgba(255, 255, 255, 0.9)',
+          }}
+        >
+          A{' '}
+          <span style={{ fontWeight: 600, color: '#ffffff' }}>
+            motion design studio
+          </span>{' '}
+          creating premium visuals for{' '}
+          <span
+            style={{
+              fontWeight: 600,
+              display: 'inline-block',
+              position: 'relative',
+              minWidth: '4ch',
+            }}
+          >
+            <span
+              style={{
+                opacity: wordOpacity,
+                background: 'linear-gradient(90deg, #a78bfa, #818cf8)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                display: 'inline-block',
+                transform: `translateY(${(1 - wordOpacity) * 8}px)`,
+              }}
+            >
+              {words[activeWord]}
+            </span>
+          </span>
+        </p>
+      </div>
+    </div>
   );
 }

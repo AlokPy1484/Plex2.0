@@ -1,46 +1,127 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
-import { Volume2, VolumeX } from 'lucide-react';
+import { useState, useMemo } from 'react';
+import { Play, Pause } from 'lucide-react';
+
+interface ShowcaseGridProps {
+  /** Global scroll fraction from the parent container (0 → 1) */
+  scrollFraction: number;
+}
 
 const videos = [
   {
     id: 1,
     title: 'Brand Showcase',
-    src: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+    src: 'https://www.w3schools.com/html/mov_bbb.mp4',
     poster: 'https://images.unsplash.com/photo-1529333166437-7750a6dd5a70?q=80&w=1200&fit=crop',
-    aspect: '9/16'
   },
   {
     id: 2,
     title: 'Creative Process',
-    src: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
+    src: 'https://www.w3schools.com/html/movie.mp4',
     poster: 'https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?q=80&w=1200&fit=crop',
-    aspect: '16/9'
   },
   {
     id: 3,
     title: 'Innovation',
-    src: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
+    src: 'https://samplelib.com/lib/preview/mp4/sample-5s.mp4',
     poster: 'https://images.unsplash.com/photo-1559028012-481c04fa702d?q=80&w=1200&fit=crop',
-    aspect: '16/9'
   },
   {
     id: 4,
     title: 'Digital Solutions',
-    src: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4',
+    src: 'https://samplelib.com/lib/preview/mp4/sample-10s.mp4',
     poster: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=1200&fit=crop',
-    aspect: '16/9'
-  }
+  },
+  {
+    id: 5,
+    title: 'Motion Graphics',
+    src: 'https://samplelib.com/lib/preview/mp4/sample-15s.mp4',
+    poster: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=1200&fit=crop',
+  },
+  {
+    id: 6,
+    title: 'Visual Identity',
+    src: 'https://samplelib.com/lib/preview/mp4/sample-20s.mp4',
+    poster: 'https://images.unsplash.com/photo-1558618666-fcd25c85f82e?q=80&w=1200&fit=crop',
+  },
+  {
+    id: 7,
+    title: 'Product Launch',
+    src: 'https://samplelib.com/lib/preview/mp4/sample-30s.mp4',
+    poster: 'https://images.unsplash.com/photo-1563089145-599997674d42?q=80&w=1200&fit=crop',
+  },
+  {
+    id: 8,
+    title: 'Campaign Film',
+    src: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+    poster: 'https://images.unsplash.com/photo-1504805572947-34fad45aed93?q=80&w=1200&fit=crop',
+  },
 ];
 
-export default function ShowcaseGrid() {
-  const [playingVideos, setPlayingVideos] = useState<Set<number>>(new Set());
-  const [mutedVideos, setMutedVideos] = useState<Set<number>>(new Set([1, 2, 3, 4]));
+/*  Bento grid placement map (CSS grid-area: row-start / col-start / row-end / col-end)
+ *  Using a 4-col × 6-row grid with varied card sizes.
+ *
+ *  ┌──────┬───────────┬──────┐
+ *  │  1   │     2     │  3   │
+ *  │(tall)│  (wide)   │      │
+ *  │      ├─────┬─────┼──────┤
+ *  │      │  4  │  5  │  6   │
+ *  │      │     │     │(tall)│
+ *  ├──────┼─────┴─────┤      │
+ *  │  7   │     8     │      │
+ *  └──────┴───────────┴──────┘
+ */
+const gridAreas: Record<number, React.CSSProperties> = {
+  1: { gridArea: '1 / 1 / 4 / 2' },   // tall left: rows 1-3, col 1
+  2: { gridArea: '1 / 2 / 3 / 4' },   // wide top-center: rows 1-2, cols 2-3
+  3: { gridArea: '1 / 4 / 3 / 5' },   // top-right: rows 1-2, col 4
+  4: { gridArea: '3 / 2 / 5 / 3' },   // mid-left: rows 3-4, col 2
+  5: { gridArea: '3 / 3 / 5 / 4' },   // mid-right: rows 3-4, col 3
+  6: { gridArea: '3 / 4 / 6 / 5' },   // tall right: rows 3-5, col 4
+  7: { gridArea: '4 / 1 / 6 / 2' },   // bottom-left: rows 4-5, col 1
+  8: { gridArea: '5 / 2 / 7 / 4' },   // wide bottom: rows 5-6, cols 2-3
+};
 
-  const toggleMute = (e: React.MouseEvent, videoId: number) => {
+// ── Per-card stagger configuration ──
+// Delay values determine when each card starts appearing (center-out, top-down)
+const STAGGER_RANGE_START = 0.55;  // global scroll fraction when first card begins
+const CARD_FADE_DURATION = 0.06;   // each card takes this much scroll range to fully appear
+
+const cardStaggerDelays: Record<number, number> = {
+  2: 0.00,   // wide top-center — appears first
+  1: 0.02,   // tall left
+  3: 0.04,   // top right
+  5: 0.06,   // mid center-right
+  4: 0.08,   // mid center-left
+  6: 0.10,   // tall right
+  7: 0.14,   // bottom left
+  8: 0.18,   // wide bottom — appears last
+};
+
+function clamp(val: number, min: number, max: number) {
+  return Math.min(Math.max(val, min), max);
+}
+
+/** Compute per-card opacity and scale from the global scrollFraction */
+function getCardStyle(cardId: number, scrollFraction: number) {
+  const delay = cardStaggerDelays[cardId] ?? 0;
+  const cardStart = STAGGER_RANGE_START + delay;
+  const cardEnd = cardStart + CARD_FADE_DURATION;
+  const progress = clamp((scrollFraction - cardStart) / (cardEnd - cardStart), 0, 1);
+
+  return {
+    opacity: progress,
+    transform: `scale(${0.7 + 0.3 * progress})`,
+  };
+}
+
+export default function ShowcaseGrid({ scrollFraction }: ShowcaseGridProps) {
+  const [playingVideos, setPlayingVideos] = useState<Set<number>>(new Set());
+
+  const togglePlay = (e: React.MouseEvent, videoId: number) => {
     e.stopPropagation();
-    setMutedVideos(prev => {
+    setPlayingVideos(prev => {
       const newSet = new Set(prev);
       if (newSet.has(videoId)) {
         newSet.delete(videoId);
@@ -51,249 +132,102 @@ export default function ShowcaseGrid() {
     });
   };
 
-  const handleMouseEnter = (videoId: number) => {
-    setPlayingVideos(prev => new Set(prev).add(videoId));
-  };
+  // Compute per-card styles (memoized)
+  const cardStyles = useMemo(() => {
+    const styles: Record<number, { opacity: number; transform: string }> = {};
+    for (const video of videos) {
+      styles[video.id] = getCardStyle(video.id, scrollFraction);
+    }
+    return styles;
+  }, [scrollFraction]);
 
-  const handleMouseLeave = (videoId: number) => {
-    setPlayingVideos(prev => {
-      const newSet = new Set(prev);
-      newSet.delete(videoId);
-      return newSet;
-    });
-  };
-
-  const handleVideoEnd = (videoId: number) => {
-    setPlayingVideos(prev => {
-      const newSet = new Set(prev);
-      newSet.delete(videoId);
-      return newSet;
-    });
-  };
-
-  const wrapperRef = useRef<HTMLDivElement>(null);
-  const [sectionOpacity, setSectionOpacity] = useState(0);
-  const FADE_DISTANCE = 600; // extra scroll pixels for the fade-in
-
-  useEffect(() => {
-    let ticking = false;
-
-    const onScroll = () => {
-      if (ticking) return;
-      ticking = true;
-      requestAnimationFrame(() => {
-        const wrapper = wrapperRef.current;
-        if (!wrapper) { ticking = false; return; }
-
-        const rect = wrapper.getBoundingClientRect();
-
-        // Before section top reaches viewport top → stay invisible
-        if (rect.top >= 0) {
-          setSectionOpacity(0);
-        } else {
-          const scrolled = -rect.top; // how far past the top
-          setSectionOpacity(Math.min(scrolled / FADE_DISTANCE, 1));
-        }
-
-        ticking = false;
-      });
-    };
-
-    window.addEventListener('scroll', onScroll, { passive: true });
-    onScroll();
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
+  // Scene is visible if we're near or past the first card's start
+  const sceneVisible = scrollFraction > STAGGER_RANGE_START - 0.02;
 
   return (
-    <div ref={wrapperRef} className="relative bg-black" style={{ paddingTop: `${FADE_DISTANCE}px`, marginTop: `-${FADE_DISTANCE}px` }}>
-      <section
-        className="sticky top-0 bg-black px-4 pb-8 md:pb-16"
+    <div
+      id="projects"
+      className="absolute inset-20 scale-95 top-40 flex items-center justify-center px-4"
+      style={{
+        pointerEvents: sceneVisible ? 'auto' : 'none',
+      }}
+    >
+      {/* Mobile: stacked cards */}
+      <div className="md:hidden w-full mx-auto max-w-7xl grid grid-cols-1 gap-3 max-h-[100vh] overflow-y-auto">
+        {videos.map((video) => (
+          <div
+            key={video.id}
+            className="group relative overflow-hidden rounded-2xl border-[6px] border-[#290A0A] bg-neutral-900 cursor-pointer"
+            style={{ aspectRatio: '16/9', ...cardStyles[video.id] }}
+          >
+            <video
+              className="absolute inset-0 w-full h-full object-cover"
+              poster={video.poster}
+              muted
+              loop
+              playsInline
+              ref={(el) => {
+                if (el) {
+                  if (playingVideos.has(video.id)) el.play();
+                  else el.pause();
+                }
+              }}
+            >
+              <source src={video.src} type="video/mp4" />
+            </video>
+            <div className="absolute bottom-3 right-3 z-10">
+              <button
+                onClick={(e) => togglePlay(e, video.id)}
+                className="flex h-9 w-9 items-center justify-center rounded-full bg-red-700 text-white transition hover:bg-red-600"
+              >
+                {playingVideos.has(video.id) ? <Pause size={16} /> : <Play size={16} />}
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Desktop: Bento grid with 4 cols × 6 rows */}
+      <div
+        className="hidden md:grid w-full mx-auto max-w-7xl"
         style={{
-          opacity: sectionOpacity,
-          transition: 'opacity 0.1s ease-out',
+          gridTemplateColumns: '1fr 1fr 1fr 1fr',
+          gridTemplateRows: 'repeat(6, calc((90vh - 60px) / 6))',
+          gap: '10px',
         }}
       >
-        <div className="mx-auto max-w-7xl grid gap-4 md:gap-6 grid-cols-1 md:grid-cols-3">
+        {videos.map((video) => (
           <div
-            className='
-                group relative overflow-hidden rounded-2xl border-[8px] md:border-[12px] border-[#290A0A] bg-neutral-900 aspect-9/16 md:row-span-2 cursor-pointer'
-            onMouseEnter={() => handleMouseEnter(videos[0].id)}
-            onMouseLeave={() => handleMouseLeave(videos[0].id)}>
-            {/* Video */}
+            key={video.id}
+            className="group relative overflow-hidden rounded-2xl border-[8px] border-[#290A0A] bg-neutral-900 cursor-pointer"
+            style={{ ...gridAreas[video.id], ...cardStyles[video.id] }}
+          >
             <video
-              className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500 group-hover:scale-105"
-              poster={videos[0].poster}
-              muted={mutedVideos.has(videos[0].id)}
+              className="absolute inset-0 w-full h-full object-cover"
+              poster={video.poster}
+              muted
               loop
               playsInline
-              onEnded={() => handleVideoEnd(videos[0].id)}
               ref={(el) => {
                 if (el) {
-                  if (playingVideos.has(videos[0].id)) {
-                    el.play();
-                  } else {
-                    el.pause();
-                  }
+                  if (playingVideos.has(video.id)) el.play();
+                  else el.pause();
                 }
               }}
             >
-              <source src={videos[0].src} type="video/mp4" />
+              <source src={video.src} type="video/mp4" />
             </video>
-
-            {/* Overlay */}
-            <div className="absolute inset-0 bg-black/50 group-hover:bg-black/0 transition-all duration-500"></div>
-
-            {/* Title Overlay */}
-            <div className="absolute bottom-4 left-4 right-4">
-            </div>
-
-            {/* Action */}
-            <div className="absolute bottom-4 right-4 z-10">
+            <div className="absolute bottom-3 right-3 z-10">
               <button
-                onClick={(e) => toggleMute(e, videos[0].id)}
-                className="flex h-10 w-10 items-center justify-center rounded-full bg-red-700 text-white transition hover:bg-red-600"
+                onClick={(e) => togglePlay(e, video.id)}
+                className="flex h-9 w-9 items-center justify-center rounded-full bg-red-700 text-white transition hover:bg-red-600"
               >
-                {mutedVideos.has(videos[0].id) ? <VolumeX size={18} /> : <Volume2 size={18} />}
+                {playingVideos.has(video.id) ? <Pause size={16} /> : <Play size={16} />}
               </button>
             </div>
           </div>
-
-
-          <div
-            className='
-                md:col-span-2 group relative overflow-hidden rounded-2xl border-[8px] md:border-[12px] border-[#290A0A] bg-neutral-900 aspect-[16/9] md:max-h-[80vh] cursor-pointer'
-            onMouseEnter={() => handleMouseEnter(videos[1].id)}
-            onMouseLeave={() => handleMouseLeave(videos[1].id)}>
-            {/* Video */}
-            <video
-              className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500 group-hover:scale-105"
-              poster={videos[1].poster}
-              muted={mutedVideos.has(videos[1].id)}
-              loop
-              playsInline
-              onEnded={() => handleVideoEnd(videos[1].id)}
-              ref={(el) => {
-                if (el) {
-                  if (playingVideos.has(videos[1].id)) {
-                    el.play();
-                  } else {
-                    el.pause();
-                  }
-                }
-              }}
-            >
-              <source src={videos[1].src} type="video/mp4" />
-            </video>
-
-            {/* Overlay */}
-            <div className="absolute inset-0 bg-black/50 group-hover:bg-black/0 transition-all duration-500"></div>
-
-            {/* Title Overlay */}
-            <div className="absolute bottom-4 left-4 right-4">
-            </div>
-
-            {/* Action */}
-            <div className="absolute bottom-4 right-4 z-10">
-              <button
-                onClick={(e) => toggleMute(e, videos[1].id)}
-                className="flex h-10 w-10 items-center justify-center rounded-full bg-red-700 text-white transition hover:bg-red-600"
-              >
-                {mutedVideos.has(videos[1].id) ? <VolumeX size={18} /> : <Volume2 size={18} />}
-              </button>
-            </div>
-          </div>
-
-
-
-          <div
-            className='
-                group relative overflow-hidden rounded-2xl border-[8px] md:border-[12px] border-[#290A0A] bg-neutral-900 aspect-video md:max-h-[80vh] cursor-pointer'
-            onMouseEnter={() => handleMouseEnter(videos[2].id)}
-            onMouseLeave={() => handleMouseLeave(videos[2].id)}>
-            {/* Video */}
-            <video
-              className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500 group-hover:scale-105"
-              poster={videos[2].poster}
-              muted={mutedVideos.has(videos[2].id)}
-              loop
-              playsInline
-              onEnded={() => handleVideoEnd(videos[2].id)}
-              ref={(el) => {
-                if (el) {
-                  if (playingVideos.has(videos[2].id)) {
-                    el.play();
-                  } else {
-                    el.pause();
-                  }
-                }
-              }}
-            >
-              <source src={videos[2].src} type="video/mp4" />
-            </video>
-
-            {/* Overlay */}
-            <div className="absolute inset-0 bg-black/50 group-hover:bg-black/0 transition-all duration-500"></div>
-
-            {/* Title Overlay */}
-            <div className="absolute bottom-3 left-3 right-3">
-            </div>
-
-            {/* Action */}
-            <div className="absolute bottom-4 right-4 z-10">
-              <button
-                onClick={(e) => toggleMute(e, videos[2].id)}
-                className="flex h-10 w-10 items-center justify-center rounded-full bg-red-700 text-white transition hover:bg-red-600"
-              >
-                {mutedVideos.has(videos[2].id) ? <VolumeX size={18} /> : <Volume2 size={18} />}
-              </button>
-            </div>
-          </div>
-          <div
-            className='
-                group relative overflow-hidden rounded-2xl border-[8px] md:border-[12px] border-[#290A0A] bg-neutral-900 aspect-video md:max-h-[80vh] cursor-pointer'
-            onMouseEnter={() => handleMouseEnter(videos[3].id)}
-            onMouseLeave={() => handleMouseLeave(videos[3].id)}>
-            {/* Video */}
-            <video
-              className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500 group-hover:scale-105"
-              poster={videos[3].poster}
-              muted={mutedVideos.has(videos[3].id)}
-              loop
-              playsInline
-              onEnded={() => handleVideoEnd(videos[3].id)}
-              ref={(el) => {
-                if (el) {
-                  if (playingVideos.has(videos[3].id)) {
-                    el.play();
-                  } else {
-                    el.pause();
-                  }
-                }
-              }}
-            >
-              <source src={videos[3].src} type="video/mp4" />
-            </video>
-
-            {/* Overlay */}
-            <div className="absolute inset-0 bg-black/50 group-hover:bg-black/0 transition-all duration-500"></div>
-
-            {/* Title Overlay */}
-            <div className="absolute bottom-3 left-3 right-3">
-            </div>
-
-            {/* Action */}
-            <div className="absolute bottom-4 right-4 z-10">
-              <button
-                onClick={(e) => toggleMute(e, videos[3].id)}
-                className="flex h-10 w-10 items-center justify-center rounded-full bg-red-700 text-white transition hover:bg-red-600"
-              >
-                {mutedVideos.has(videos[3].id) ? <VolumeX size={18} /> : <Volume2 size={18} />}
-              </button>
-            </div>
-          </div>
-
-        </div>
-      </section>
+        ))}
+      </div>
     </div>
   );
 }
