@@ -1,25 +1,28 @@
+import ContactSection from './components/ContactSection';
+import ContactUs from './components/ContactUs';
 import Footer from './components/Footer';
+import HeroSection from './components/HeroSection';
 import LogoLooper from './components/LogoLooper';
 import Navbar from './components/Navbar';
 import PickMe from './components/PickMe';
-import ScrollStoryContainer from './components/ScrollStoryContainer';
-import ServicesGrid from './components/ServicesGrid';
+import ServicesSection from './components/ServicesSection';
+import ShowcaseGrid from './components/ShowcaseGrid';
 import Testimonial from './components/Testimonial';
-import PricingSection from './components/PricingSection';
-import ContactSection from './components/ContactSection';
-import ContactUs from './components/ContactUs';
 
 export default function Home() {
   return (
     <div className="bg-black ">
       <Navbar />
-      <ScrollStoryContainer />
-      <ServicesGrid />
+      <HeroSection />
+      <ShowcaseGrid />
+      <ServicesSection />
+      <LogoLooper />
+      <PickMe />
       <Testimonial />
-      <PricingSection />
+      {/* <ContactSection /> */}
       <ContactUs />
       <Footer />
+
     </div>
   );
 }
-
