@@ -5,7 +5,9 @@ import HeroSection from './components/HeroSection';
 import LogoLooper from './components/LogoLooper';
 import Navbar from './components/Navbar';
 import PickMe from './components/PickMe';
-import ServicesSection from './components/ServicesSection';
+import PricingSection from './components/PricingSection';
+import ServicesGrid from './components/ServicesGrid';
+import ServicesSection from './components/ServicesSectionOld';
 import ShowcaseGrid from './components/ShowcaseGrid';
 import Testimonial from './components/Testimonial';
 
@@ -15,9 +17,11 @@ export default function Home() {
       <Navbar />
       <HeroSection />
       <ShowcaseGrid />
-      <ServicesSection />
+      {/* <ServicesSection /> */}
+      <ServicesGrid />
       <LogoLooper />
       <PickMe />
+      <PricingSection />
       <Testimonial />
       {/* <ContactSection /> */}
       <ContactUs />

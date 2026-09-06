@@ -20,7 +20,7 @@ export default function Navbar() {
             <Pyramid size={24} />
           </span>
           <a className="text-white md:text-2xl font-light whitespace-nowrap">
-            Digital Heroes
+            Plex Visuals
           </a>
         </div>
         <nav
@@ -38,7 +38,7 @@ export default function Navbar() {
               {hovered === idx && (
                 <motion.span
                   layoutId="hover"
-                  className="hidden md:flex absolute inset-0  rounded-full border border-[#3F6B54]/20 bg-white/10  text-sm text-white "></motion.span>
+                  className="hidden md:flex absolute inset-0  rounded-full border border-red-950/5 bg-white/10  text-sm text-white "></motion.span>
               )}
 
               <span className='hidden md:flex justify-center items-center gap-2 w-full h-full whitespace-nowrap'>

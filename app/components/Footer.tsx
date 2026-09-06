@@ -1,8 +1,12 @@
 'use client';
 
 import { Twitter, Instagram, Facebook, Dribbble } from 'lucide-react';
+import { motion, useScroll, useTransform } from 'motion/react'
+import { useRef } from 'react';
 
 export default function Footer() {
+
+
   return (
     <div className='relative h-[400px]'
       style={{
@@ -12,7 +16,18 @@ export default function Footer() {
         <div className='sticky top-[calc(100vh-400px)] h-[400px]'>
 
 
-          <footer id="footer" className="relative bg-neutral-900/60  px-6 pt-24 pb-10 text-white">
+          <motion.footer
+            initial={{
+              filter: "blur(10px)"
+            }}
+            whileInView={{
+              filter: "blur(0px)"
+            }}
+            transition={{
+              duration: 0.6,
+              ease: "easeOut"
+            }}
+            id="footer" className="relative bg-neutral-900/60  px-6 pt-24 pb-10 text-white">
             {/* Subtle top divider */}
             <div className="absolute inset-x-0 top-0 h-px bg-white/10" />
 
@@ -67,7 +82,7 @@ export default function Footer() {
                 <span>© 2025 Plex</span>
               </div>
             </div >
-          </footer >
+          </motion.footer >
         </div>
       </div>
     </div>
