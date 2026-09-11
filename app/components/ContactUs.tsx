@@ -6,7 +6,7 @@ export default function ContactUs() {
   return (
     <section
       id="contact"
-      className="flex flex-col items-center relative w-screen bg-black px-6 py-24 text-white"
+      className="flex flex-col items-center relative w-screen bg-transparent px-6 py-24 text-white"
     >
       <div className=''>
         {/* Heading */}
