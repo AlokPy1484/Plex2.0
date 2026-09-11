@@ -1,47 +1,108 @@
-'use client';
+"use client"
+import { CalendarDays, Phone, Pyramid, Smile } from "lucide-react";
+import Link from "next/link";
+import { useState } from "react";
+import { motion } from "motion/react"
 
-import Link from 'next/link';
-import { CalendarDays, Sparkles } from 'lucide-react';
-import Image from 'next/image';
-import Logo from '../../public/nav_logo.png'
+
 
 export default function Navbar() {
+
+
+  const [hovered, setHovered] = useState<number | null>(3)
+
+
   return (
-    <nav className="fixed top-6 left-1/2 z-50 w-[95vw] -translate-x-1/2 ">
-      <div className="flex items-center justify-between rounded-full border  border-white/40 bg-white/10 px-2 py-1 backdrop-blur-xl shadow-lg">
-
-        {/* Logo */}
-        <div className="flex items-center gap-2 text-white font-semibold text-lg">
-          <span className="flex h-10 w-10 items-center justify-center rounded-full font-black bg-white/10">
-            <Image src={Logo} alt="logo" width={200} className='bg-none rounded-full ' />
+    <div className="fixed top-6  flex justify-center items-center w-full  z-100">
+      <div className="flex md:justify-between items-center w-[95vw] mx-10 p-2 border border-white/10 bg-black/40  backdrop-blur-xl rounded-4xl w-full ">
+        <div className="flex justify-start items-center gap-4">
+          <span className="p-1 rounded-full bg-white">
+            <Pyramid size={24} />
           </span>
+          <a className="text-white md:text-2xl font-light whitespace-nowrap">
+            Plex Visuals
+          </a>
         </div>
+        <nav
+          onMouseLeave={() => setHovered(3)}
+          className=" flex justify-end md:justify-start items-center md:gap-4 ">
 
-        {/* Nav Links */}
-        <div className="hidden md:flex items-center gap-8 text-sm text-white/70">
-          <Link href="#services" className="hover:text-white transition">
-            Services
-          </Link>
-          <Link href="#projects" className="hover:text-white transition">
-            Projects
-          </Link>
-          <Link href="#testimonials" className="hover:text-white transition">
-            Testimonials
-          </Link>
-          <Link href="#contact" className="hover:text-white transition">
-            Contact
-          </Link>
-          <Link href="#contact" className="hover:text-white transition">
-            Pricing
-          </Link>
+          {navItems.map((item, idx) => (
 
 
-          {/* CTA */}
-        </div>
-        <button className="flex items-center gap-2 rounded-full border border-white/50 px-4 py-2 text-sm text-red-800  bg-black  transition">
-          <span className='hidden md:block '>Start Now</span>
-        </button>
+            <Link
+              key={idx}
+              onMouseEnter={() => setHovered(idx)}
+              href={item.link} className="hidden md:flex relative  items-center justify-start gap-2 rounded-full  px-4 py-2 text-sm text-white px-4 h-full">
+
+              {hovered === idx && (
+                <motion.span
+                  layoutId="hover"
+                  className="hidden md:flex absolute inset-0  rounded-full border border-red-950/5 bg-white/10  text-sm text-white "></motion.span>
+              )}
+
+              <span className='hidden md:flex justify-center items-center gap-2 w-full h-full whitespace-nowrap'>
+                {idx === 3 && <Phone size={16} />}
+                {item.lable}</span>
+
+            </Link>
+          ))}
+
+          {/* <Link className="flex md:hidden relative  items-center justify-start gap-2 rounded-full  px-4 py-2 text-sm text-white px-4 h-full"
+                        href="/meeting">
+
+
+                        <motion.span
+                            layoutId="hover"
+                            className="flex absolute inset-0  rounded-full border border-[#3F6B54]/20 bg-white/10  text-sm text-white "></motion.span>
+
+
+                        <span className='flex justify-center items-center gap-2 w-full h-full whitespace-nowrap'>
+                            <CalendarDays size={16} />
+                            Book Meeting</span>
+                    </Link> */}
+        </nav>
+
+
       </div>
-    </nav>
-  );
+    </div>
+  )
 }
+
+type navItemsTyoe = {
+  lable: string;
+  link: string;
+}
+
+const navItems: navItemsTyoe[] = [
+  {
+    lable: "Admin",
+    link: "/admin"
+  },
+  {
+    lable: "Services",
+    link: "#services"
+  },
+  {
+    lable: "About",
+    link: "#projects"
+  },
+  {
+    lable: "Contact",
+    link: "#contact"
+  }
+]
+
+
+
+//layout hover structure
+
+{/* <nav>
+    {
+        <Link>
+        
+        {contitional <div/>}
+        main <span/>
+        </Link>
+    }
+</nav> */}

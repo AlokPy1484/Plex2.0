@@ -61,7 +61,7 @@ export default function ServicesSection() {
           <ServiceCard
             title="Provide multi tool support"
             description="Crafting distinctive, scalable, and impactful logos that embody your brand's identity."
-            component={<DockDemo />}
+            component={<DockDemo/>}
           />
 
           {/* Tall */}
@@ -75,8 +75,8 @@ export default function ServicesSection() {
           {/* Short */}
           <ServiceCard
             title="Helping your company reach your audiance"
-            description="Bringing ideas to life with interactive, user-centered Framer designs."
-            component={<AnimatedBeamDemo />}
+            description="Bringing ideas to life with interactive, user-centered Framer designs." 
+            component={<AnimatedBeamDemo/>}
 
           />
         </div>

@@ -1,5 +1,6 @@
 'use client';
 
+import { DottedGlowBackground } from '@/components/ui/dotted-glow-background';
 import { FileEdit, Mic, Film, ArrowRight } from 'lucide-react';
 import { ReactNode } from 'react';
 
@@ -11,19 +12,19 @@ interface ServiceCardProps {
 
 const services: ServiceCardProps[] = [
   {
-    icon: <FileEdit className="w-6 h-6 text-red-500" />,
+    icon: <FileEdit className="w-6 h-6 text-neutral-400" />,
     title: 'Scriptwriting',
     description:
       'We craft compelling, high-converting scripts designed to capture attention and communicate your message with clarity.',
   },
   {
-    icon: <Mic className="w-6 h-6 text-red-500" />,
+    icon: <Mic className="w-6 h-6 text-neutral-400" />,
     title: 'Voiceover Generation',
     description:
       'We deliver natural, studio-quality voiceovers that elevate your content with professional and engaging tone.',
   },
   {
-    icon: <Film className="w-6 h-6 text-red-500" />,
+    icon: <Film className="w-6 h-6 text-neutral-400" />,
     title: 'Video Production',
     description:
       'We transform ideas into premium, smooth motion visuals that are visually striking and built to leave a lasting impression.',
@@ -32,9 +33,9 @@ const services: ServiceCardProps[] = [
 
 function ServiceCard({ icon, title, description }: ServiceCardProps) {
   return (
-    <div className="group relative flex flex-col items-start gap-4 rounded-xl border border-white/[0.06] bg-[#0B0B0B] p-8 transition-all duration-300 hover:border-red-600/50">
+    <div className="group relative flex flex-col items-start gap-4 rounded-xl border border-white/[0.06] bg-[#0B0B0B] p-8 transition-all duration-300 hover:border-neutral-700/90">
       {/* Icon */}
-      <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-red-600/10">
+      <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-neutral-900/90">
         {icon}
       </div>
 
@@ -53,6 +54,20 @@ function ServiceCard({ icon, title, description }: ServiceCardProps) {
         Explore
         <ArrowRight className="h-4 w-4" />
       </div>
+      <DottedGlowBackground
+        className="pointer-events-none mask-radial-to-90% mask-radial-at-center"
+        opacity={0.2}
+        gap={10}
+        radius={1.6}
+        colorLightVar="--color-red-500"
+        glowColorLightVar="--color-red-600"
+        colorDarkVar="--color-red-500"
+        glowColorDarkVar="--color-red-900"
+        backgroundOpacity={0}
+        speedMin={0.3}
+        speedMax={1.6}
+        speedScale={1}
+      />
     </div>
   );
 }
@@ -64,7 +79,7 @@ export default function ServicesGrid() {
       className="relative w-full bg-black px-6 py-24 text-white"
     >
       {/* Header */}
-      <div className="mx-auto max-w-7xl text-center">
+      <div className="mx-auto max-w-6xl text-center">
         <span className="mb-4 block text-sm font-medium uppercase tracking-[0.3em] text-red-500">
           Services Ecosystem
         </span>
