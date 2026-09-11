@@ -13,7 +13,21 @@ export default function Navbar() {
 
 
   return (
-    <div className="fixed top-6  flex justify-center items-center w-full  z-100">
+    <motion.div
+      initial={{
+        y: -8,
+        opacity: 0
+
+      }}
+      whileInView={{
+        y: 0,
+        opacity: 1
+      }}
+      transition={{
+        duration: 0.3,
+        ease: "easeInOut"
+      }}
+      className="fixed top-6  flex justify-center items-center w-full  z-100">
       <div className="flex md:justify-between items-center w-[95vw] mx-10 p-2 border border-white/10 bg-black/40  backdrop-blur-xl rounded-4xl w-full ">
         <div className="flex justify-start items-center gap-4">
           <span className="p-1 rounded-full bg-white">
@@ -65,7 +79,7 @@ export default function Navbar() {
 
 
       </div>
-    </div>
+    </motion.div>
   )
 }
 

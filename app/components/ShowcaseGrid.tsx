@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Volume2, VolumeX } from 'lucide-react';
-
+import { motion } from "motion/react"
 const videos = [
   {
     id: 1,
@@ -67,7 +67,20 @@ export default function ShowcaseGrid() {
   return (
     <section className="bg-black px-4 pb-8 md:pb-16">
       <div className="mx-auto max-w-7xl grid gap-4 md:gap-6 grid-cols-1 md:grid-cols-3">
-        <div
+        <motion.div
+          initial={{
+            y: 16,
+            opacity: 0
+
+          }}
+          whileInView={{
+            y: 0,
+            opacity: 1
+          }}
+          transition={{
+            duration: 0.3,
+            ease: "easeInOut"
+          }}
           className='
               group relative overflow-hidden rounded-2xl border-[8px] md:border-[12px] border-[#290A0A] bg-neutral-900 aspect-9/16 md:row-span-2 cursor-pointer'
           onMouseEnter={handleMouseEnter}
@@ -99,10 +112,23 @@ export default function ShowcaseGrid() {
               {mutedVideos.has(videos[0].id) ? <VolumeX size={18} /> : <Volume2 size={18} />}
             </button>
           </div>
-        </div>
+        </motion.div>
 
 
-        <div
+        <motion.div
+          initial={{
+            y: 16,
+            opacity: 0
+
+          }}
+          whileInView={{
+            y: 0,
+            opacity: 1
+          }}
+          transition={{
+            duration: 0.3,
+            ease: "easeInOut"
+          }}
           className='
               md:col-span-2 group relative overflow-hidden rounded-2xl border-[8px] md:border-[12px] border-[#290A0A] bg-neutral-900 aspect-[16/9] md:max-h-[80vh] cursor-pointer'
           onMouseEnter={handleMouseEnter}
@@ -134,11 +160,24 @@ export default function ShowcaseGrid() {
               {mutedVideos.has(videos[1].id) ? <VolumeX size={18} /> : <Volume2 size={18} />}
             </button>
           </div>
-        </div>
+        </motion.div>
 
 
 
-        <div
+        <motion.div
+          initial={{
+            y: 16,
+            opacity: 0
+
+          }}
+          whileInView={{
+            y: 0,
+            opacity: 1
+          }}
+          transition={{
+            duration: 0.3,
+            ease: "easeInOut"
+          }}
           className='
               group relative overflow-hidden rounded-2xl border-[8px] md:border-[12px] border-[#290A0A] bg-neutral-900 aspect-video md:max-h-[80vh] cursor-pointer'
           onMouseEnter={handleMouseEnter}
@@ -170,8 +209,21 @@ export default function ShowcaseGrid() {
               {mutedVideos.has(videos[2].id) ? <VolumeX size={18} /> : <Volume2 size={18} />}
             </button>
           </div>
-        </div>
-        <div
+        </motion.div>
+        <motion.div
+          initial={{
+            y: 16,
+            opacity: 0
+
+          }}
+          whileInView={{
+            y: 0,
+            opacity: 1
+          }}
+          transition={{
+            duration: 0.3,
+            ease: "easeInOut"
+          }}
           className='
               group relative overflow-hidden rounded-2xl border-[8px] md:border-[12px] border-[#290A0A] bg-neutral-900 aspect-video md:max-h-[80vh] cursor-pointer'
           onMouseEnter={handleMouseEnter}
@@ -203,9 +255,9 @@ export default function ShowcaseGrid() {
               {mutedVideos.has(videos[3].id) ? <VolumeX size={18} /> : <Volume2 size={18} />}
             </button>
           </div>
-        </div>
+        </motion.div>
 
       </div>
-    </section>
+    </section >
   );
 }
